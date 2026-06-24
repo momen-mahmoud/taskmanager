@@ -101,7 +101,15 @@ flutter build apk --release
 
 > No code generation step is required — models use hand-written `fromJson`/`toJson`, so a fresh clone runs immediately after `flutter pub get`.
 
-**Try it:** Register any name/email/password → you're taken to Home → open a project → toggle/add tasks → open Profile to switch theme or log out. Re-launching the app keeps you logged in until you log out.
+### 🔑 Login credentials
+
+Authentication is **mock/local** (jsonplaceholder has no auth endpoint), so there is **no pre-seeded account**.
+
+> **On first launch, tap _Register_ to create an account** (any name, a valid email, and a password of 6+ characters — e.g. `jane@example.com` / `secret1`). You'll be signed in automatically. After that you can **log in** with those same credentials.
+
+Credentials are stored locally on the device (hashed) and persist until you log out or uninstall, so logging straight into the **Login** screen will fail until an account has been registered on that device.
+
+**Quick walkthrough:** Register → Home → open a project → toggle/add tasks → open Profile to switch theme or log out. Re-launching the app keeps you logged in until you log out.
 
 ---
 
