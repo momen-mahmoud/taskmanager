@@ -13,14 +13,16 @@ class TaskModel extends Task {
   });
 
   /// Maps a `/todos` API item. [projectId] is supplied by the caller because the
-  /// API has no project association.
+  /// API has no project association. dummyjson stores the text in `todo`
+  /// (jsonplaceholder used `title`); both are accepted.
   factory TaskModel.fromApi(Map<String, dynamic> json, int projectId) {
     final id = json['id'] as int;
     final completed = json['completed'] as bool? ?? false;
+    final text = (json['todo'] ?? json['title']) as String?;
     return TaskModel(
       id: id,
       projectId: projectId,
-      title: (json['title'] as String?)?.trim() ?? '',
+      title: text?.trim() ?? '',
       status: completed ? TaskStatus.done : TaskStatus.pending,
       priority: TaskPriority.values[id % TaskPriority.values.length],
     );

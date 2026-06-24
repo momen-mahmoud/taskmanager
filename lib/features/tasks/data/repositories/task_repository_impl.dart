@@ -27,10 +27,7 @@ class TaskRepositoryImpl implements TaskRepository {
   final NetworkInfo _networkInfo;
 
   @override
-  Future<Either<Failure, List<Task>>> getTasks({
-    required int projectId,
-    required int userId,
-  }) async {
+  Future<Either<Failure, List<Task>>> getTasks({required int projectId}) async {
     // Cache holds any local mutations and is authoritative once populated.
     final cached = _local.getCachedTasks(projectId);
     if (cached != null) return right(cached);
@@ -39,7 +36,7 @@ class TaskRepositoryImpl implements TaskRepository {
       return left(const NetworkFailure());
     }
     try {
-      final tasks = await _remote.getTasks(userId: userId, projectId: projectId);
+      final tasks = await _remote.getTasks(projectId: projectId);
       await _local.cacheTasks(projectId, tasks);
       return right(tasks);
     } on ServerException catch (e) {

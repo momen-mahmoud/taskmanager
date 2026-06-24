@@ -13,19 +13,15 @@ class GetTasks implements UseCase<List<Task>, GetTasksParams> {
 
   @override
   Future<Either<Failure, List<Task>>> call(GetTasksParams params) {
-    return _repository.getTasks(
-      projectId: params.projectId,
-      userId: params.userId,
-    );
+    return _repository.getTasks(projectId: params.projectId);
   }
 }
 
 class GetTasksParams extends Equatable {
-  const GetTasksParams({required this.projectId, required this.userId});
+  const GetTasksParams({required this.projectId});
 
   final int projectId;
-  final int userId;
 
   @override
-  List<Object?> get props => [projectId, userId];
+  List<Object?> get props => [projectId];
 }

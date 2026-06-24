@@ -3,9 +3,10 @@ class AppConstants {
   AppConstants._();
 
   // ---- API ----
-  static const String baseUrl = 'https://jsonplaceholder.typicode.com';
+  static const String baseUrl = 'https://dummyjson.com';
   static const String postsEndpoint = '/posts';
   static const String todosEndpoint = '/todos';
+  static const String todosAddEndpoint = '/todos/add';
 
   static const Duration connectTimeout = Duration(seconds: 15);
   static const Duration receiveTimeout = Duration(seconds: 15);

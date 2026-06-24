@@ -63,17 +63,18 @@ Repositories return `Either<Failure, T>` (via **fpdart**) so errors are explicit
 
 ## 🔌 API & Mock Auth (important implementation notes)
 
-The app uses **[jsonplaceholder.typicode.com](https://jsonplaceholder.typicode.com)** as the REST backend. Because that service has **no authentication endpoint** and no native "project/task" resources, the following mappings/decisions were made (and are isolated in the data layer so a real backend could be dropped in by changing only the data sources):
+The app uses **[dummyjson.com](https://dummyjson.com)** as the REST backend. Since it has no native "project/task" resources (and its per-user todos are sparse), the following mappings were made — all **isolated in the data layer**, so a real backend could be dropped in by changing only the data sources:
 
 | App concept | API source | Notes |
 |---|---|---|
-| **Projects** | `GET /posts` | `body` → description. The API has no status, so status is derived deterministically from the id (`id % 3` → Active / On Hold / Completed). |
-| **Tasks** | `GET /todos?userId={project.userId}` | The API has no project→task link, so a project's tasks are its owner's todos. `completed` → Done/Pending; priority is derived from the id (`id % 3` → Low/Medium/High). |
-| **Mark done** | `PATCH /todos/{id}` | jsonplaceholder fakes the response (does not persist). |
-| **Add task** | `POST /todos` | jsonplaceholder fakes the response (always returns id 201). |
+| **Projects** | `GET /posts?limit=30` | Response is wrapped (`{ "posts": [...] }`). `body` → description. No status field, so status is derived deterministically from the id (`id % 3` → Active / On Hold / Completed). |
+| **Tasks** | `GET /todos?limit=10&skip={f(projectId)}` | The API has no project→task link, and `/todos/user/{id}` is mostly empty, so each project is mapped to a **stable, non-empty slice** of `/todos` (skip derived from the project id). dummyjson's text field `todo` → title; `completed` → Done/Pending; priority derived from id (`id % 3` → Low/Medium/High). |
+| **Mark done** | `PATCH /todos/{id}` | dummyjson echoes the change (does not persist). |
+| **Add task** | `POST /todos/add` | dummyjson echoes a created todo (does not persist). |
 
-- **Mock authentication:** Registration stores the user (with a salted SHA-256 password hash) in Hive. Login verifies the credentials and **mints a fake JWT** (`header.payload.signature`, base64url, carrying the user id and a 7-day expiry). The token is persisted with **`flutter_secure_storage`** (Keychain/Keystore) and attached as a `Bearer` header by a Dio interceptor. On launch the token's expiry is checked to restore the session.
-- **Cache as source of truth for writes:** since jsonplaceholder does not persist writes, once tasks are loaded the local Hive cache becomes authoritative. Mutations (toggle/add) are applied to the cache (with best-effort remote sync) so they survive navigation and work offline.
+- **Mock authentication:** dummyjson only authenticates its own predefined **usernames** (not arbitrary emails) and can't register new users, which is incompatible with the required *email + registration* flow — so auth is handled **locally**. Registration stores the user (with a salted SHA-256 password hash) in Hive. Login verifies the credentials and **mints a JWT** (`header.payload.signature`, base64url, carrying the user id and a 7-day expiry). The token is persisted with **`flutter_secure_storage`** (Keychain/Keystore) and attached as a `Bearer` header by a Dio interceptor. On launch the token's expiry is checked to restore the session.
+- **Resilient networking:** a Dio **retry interceptor** retries transient connection failures (timeouts / connection resets) up to 3× with backoff before surfacing an error.
+- **Cache as source of truth for writes:** since the API does not persist writes, once tasks are loaded the local Hive cache becomes authoritative. Mutations (toggle/add) are applied to the cache (with best-effort remote sync) so they survive navigation and work offline.
 
 ---
 

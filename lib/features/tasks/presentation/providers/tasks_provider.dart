@@ -23,7 +23,7 @@ class TasksNotifier extends FamilyAsyncNotifier<List<Task>, TaskArgs> {
   @override
   Future<List<Task>> build(TaskArgs arg) async {
     final result = await ref.read(getTasksUseCaseProvider).call(
-          GetTasksParams(projectId: arg.projectId, userId: arg.userId),
+          GetTasksParams(projectId: arg.projectId),
         );
     return result.fold((failure) => throw failure.message, (tasks) => tasks);
   }

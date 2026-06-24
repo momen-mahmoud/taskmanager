@@ -4,12 +4,9 @@ import '../../../../core/error/failures.dart';
 import '../entities/task.dart';
 
 abstract class TaskRepository {
-  /// Tasks for a project. jsonplaceholder has no project→task link, so we fetch
-  /// `/todos?userId={userId}` and treat them as [projectId]'s tasks.
-  Future<Either<Failure, List<Task>>> getTasks({
-    required int projectId,
-    required int userId,
-  });
+  /// Tasks for a project. The API has no project→task link, so the data layer
+  /// maps a deterministic slice of `/todos` to [projectId].
+  Future<Either<Failure, List<Task>>> getTasks({required int projectId});
 
   /// Toggles a task's done state (optimistic; cache is the source of truth).
   Future<Either<Failure, Task>> toggleDone(Task task);

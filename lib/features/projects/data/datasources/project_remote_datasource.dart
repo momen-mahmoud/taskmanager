@@ -12,8 +12,12 @@ class ProjectRemoteDataSource {
 
   Future<List<ProjectModel>> getProjects() async {
     try {
-      final response = await _dio.get<List<dynamic>>(AppConstants.postsEndpoint);
-      final data = response.data ?? const [];
+      // dummyjson wraps the list: { "posts": [...], "total", "skip", "limit" }.
+      final response = await _dio.get<Map<String, dynamic>>(
+        AppConstants.postsEndpoint,
+        queryParameters: {'limit': 30},
+      );
+      final data = (response.data?['posts'] as List<dynamic>?) ?? const [];
       return data
           .map((e) => ProjectModel.fromJson(e as Map<String, dynamic>))
           .toList();
