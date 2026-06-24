@@ -6,6 +6,7 @@ import '../constants/app_constants.dart';
 import '../error/exceptions.dart';
 import '../storage/secure_storage.dart';
 import 'auth_interceptor.dart';
+import 'retry_interceptor.dart';
 
 /// Configured [Dio] instance (base URL, timeouts, auth + logging interceptors).
 final dioProvider = Provider<Dio>((ref) {
@@ -19,6 +20,7 @@ final dioProvider = Provider<Dio>((ref) {
   );
 
   dio.interceptors.add(AuthInterceptor(ref.read(secureStorageProvider)));
+  dio.interceptors.add(RetryInterceptor(dio));
 
   if (kDebugMode) {
     dio.interceptors.add(
