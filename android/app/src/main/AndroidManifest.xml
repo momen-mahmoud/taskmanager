@@ -1,4 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Required for API calls in release/profile builds (Flutter only adds this
+         to the debug manifest automatically). -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="assessment"
         android:name="${applicationName}"
