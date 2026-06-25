@@ -68,9 +68,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const SizedBox(height: 24),
-                    Icon(Icons.task_alt_rounded,
-                        size: 72, color: theme.colorScheme.primary),
-                    const SizedBox(height: 16),
+                    Center(
+                      child: Container(
+                        height: 88,
+                        width: 88,
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary,
+                          borderRadius: BorderRadius.circular(26),
+                          boxShadow: [
+                            BoxShadow(
+                              color: theme.colorScheme.primary
+                                  .withValues(alpha: 0.4),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: Icon(Icons.task_alt_rounded,
+                            size: 50, color: theme.colorScheme.onPrimary),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
                     Text('Welcome back',
                         textAlign: TextAlign.center,
                         style: theme.textTheme.headlineSmall

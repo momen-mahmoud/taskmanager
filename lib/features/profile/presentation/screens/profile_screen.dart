@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/theme_provider.dart';
+import '../../../../core/widgets/app_button.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 
 /// Profile / Settings: shows the signed-in user, a dark-mode toggle and logout.
@@ -12,6 +14,9 @@ class ProfileScreen extends ConsumerWidget {
     final shouldLogout = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
         title: const Text('Log out?'),
         content: const Text('You will need to sign in again to continue.'),
         actions: [
@@ -44,27 +49,47 @@ class ProfileScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Profile')),
       body: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
         children: [
-          const SizedBox(height: 24),
+          const SizedBox(height: 8),
           Center(
-            child: CircleAvatar(
-              radius: 44,
-              backgroundColor: theme.colorScheme.primaryContainer,
-              child: Text(
-                _initials(user?.name),
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  color: theme.colorScheme.onPrimaryContainer,
-                  fontWeight: FontWeight.bold,
+            child: Container(
+              height: 104,
+              width: 104,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [AppColors.seed, AppColors.accents[6]],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.seed.withValues(alpha: 0.4),
+                    blurRadius: 22,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: Center(
+                child: Text(
+                  _initials(user?.name),
+                  style: const TextStyle(
+                    fontFamily: 'Fredoka',
+                    fontSize: 38,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 18),
           Center(
             child: Text(
               user?.name ?? 'Guest',
-              style: theme.textTheme.titleLarge
-                  ?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.w600),
             ),
           ),
           const SizedBox(height: 4),
@@ -75,42 +100,49 @@ class ProfileScreen extends ConsumerWidget {
                   ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
             ),
           ),
-          const SizedBox(height: 32),
-          const Divider(height: 1),
-          ListTile(
-            leading: const Icon(Icons.person_outline),
-            title: const Text('Name'),
-            subtitle: Text(user?.name ?? '—'),
-          ),
-          ListTile(
-            leading: const Icon(Icons.email_outlined),
-            title: const Text('Email'),
-            subtitle: Text(user?.email ?? '—'),
-          ),
-          const Divider(height: 1),
-          SwitchListTile(
-            secondary: Icon(isDark ? Icons.dark_mode : Icons.light_mode),
-            title: const Text('Dark mode'),
-            subtitle: const Text('Toggle the app theme'),
-            value: isDark,
-            onChanged: (on) => ref
-                .read(themeModeProvider.notifier)
-                .setMode(on ? ThemeMode.dark : ThemeMode.light),
-          ),
-          const Divider(height: 1),
-          const SizedBox(height: 24),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: OutlinedButton.icon(
-              style: OutlinedButton.styleFrom(
-                foregroundColor: theme.colorScheme.error,
-                minimumSize: const Size.fromHeight(52),
-                side: BorderSide(color: theme.colorScheme.error),
+          const SizedBox(height: 28),
+          _SettingsCard(
+            children: [
+              _InfoTile(
+                icon: Icons.person_rounded,
+                color: AppColors.accents[3],
+                label: 'Name',
+                value: user?.name ?? '—',
               ),
-              icon: const Icon(Icons.logout),
-              label: const Text('Log out'),
-              onPressed: () => _confirmLogout(context, ref),
-            ),
+              const Divider(height: 1, indent: 64),
+              _InfoTile(
+                icon: Icons.email_rounded,
+                color: AppColors.accents[5],
+                label: 'Email',
+                value: user?.email ?? '—',
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _SettingsCard(
+            children: [
+              SwitchListTile(
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+                secondary: _IconBadge(
+                  icon: isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
+                  color: AppColors.accents[2],
+                ),
+                title: const Text('Dark mode'),
+                subtitle: const Text('Toggle the app theme'),
+                value: isDark,
+                onChanged: (on) => ref
+                    .read(themeModeProvider.notifier)
+                    .setMode(on ? ThemeMode.dark : ThemeMode.light),
+              ),
+            ],
+          ),
+          const SizedBox(height: 28),
+          AppButton(
+            label: 'Log out',
+            icon: Icons.logout_rounded,
+            color: theme.colorScheme.error,
+            onPressed: () => _confirmLogout(context, ref),
           ),
         ],
       ),
@@ -122,5 +154,68 @@ class ProfileScreen extends ConsumerWidget {
     if (parts.isEmpty || parts.first.isEmpty) return '?';
     if (parts.length == 1) return parts.first[0].toUpperCase();
     return (parts.first[0] + parts.last[0]).toUpperCase();
+  }
+}
+
+class _SettingsCard extends StatelessWidget {
+  const _SettingsCard({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Column(children: children),
+      ),
+    );
+  }
+}
+
+class _InfoTile extends StatelessWidget {
+  const _InfoTile({
+    required this.icon,
+    required this.color,
+    required this.label,
+    required this.value,
+  });
+
+  final IconData icon;
+  final Color color;
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+      leading: _IconBadge(icon: icon, color: color),
+      title: Text(label,
+          style: theme.textTheme.bodySmall
+              ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+      subtitle: Text(value, style: theme.textTheme.bodyLarge),
+    );
+  }
+}
+
+class _IconBadge extends StatelessWidget {
+  const _IconBadge({required this.icon, required this.color});
+
+  final IconData icon;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 42,
+      width: 42,
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(13),
+      ),
+      child: Icon(icon, color: color, size: 22),
+    );
   }
 }

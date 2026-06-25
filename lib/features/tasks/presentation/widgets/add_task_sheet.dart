@@ -12,10 +12,15 @@ Future<void> showAddTaskSheet(BuildContext context, TaskArgs args) {
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
-    showDragHandle: true,
     builder: (_) => AddTaskSheet(args: args),
   );
 }
+
+const _priorityColors = {
+  TaskPriority.low: Color(0xFF4ECDC4),
+  TaskPriority.medium: Color(0xFFFF9F1C),
+  TaskPriority.high: Color(0xFFFF6B6B),
+};
 
 class AddTaskSheet extends ConsumerStatefulWidget {
   const AddTaskSheet({super.key, required this.args});
@@ -59,6 +64,7 @@ class _AddTaskSheetState extends ConsumerState<AddTaskSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     return Padding(
       padding: EdgeInsets.fromLTRB(20, 8, 20, 20 + bottomInset),
@@ -68,8 +74,23 @@ class _AddTaskSheetState extends ConsumerState<AddTaskSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('New Task', style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 16),
+            Row(
+              children: [
+                Container(
+                  height: 40,
+                  width: 40,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.14),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(Icons.add_task_rounded,
+                      color: theme.colorScheme.primary),
+                ),
+                const SizedBox(width: 12),
+                Text('New Task', style: theme.textTheme.titleLarge),
+              ],
+            ),
+            const SizedBox(height: 20),
             AppTextField(
               label: 'Title',
               controller: _titleController,
@@ -78,26 +99,78 @@ class _AddTaskSheetState extends ConsumerState<AddTaskSheet> {
               validator: (v) => Validators.required(v, field: 'Title'),
               onFieldSubmitted: (_) => _submit(),
             ),
-            const SizedBox(height: 16),
-            Text('Priority',
-                style: Theme.of(context)
-                    .textTheme
-                    .labelLarge
-                    ?.copyWith(fontWeight: FontWeight.w600)),
-            const SizedBox(height: 8),
-            SegmentedButton<TaskPriority>(
-              segments: TaskPriority.values
-                  .map((p) => ButtonSegment(value: p, label: Text(p.label)))
-                  .toList(),
-              selected: {_priority},
-              onSelectionChanged: (s) => setState(() => _priority = s.first),
+            const SizedBox(height: 18),
+            Padding(
+              padding: const EdgeInsets.only(left: 4, bottom: 10),
+              child: Text('Priority',
+                  style: theme.textTheme.labelLarge
+                      ?.copyWith(fontWeight: FontWeight.w700)),
             ),
-            const SizedBox(height: 24),
+            Row(
+              children: [
+                for (final p in TaskPriority.values) ...[
+                  Expanded(child: _PriorityPill(
+                    priority: p,
+                    selected: _priority == p,
+                    onTap: () => setState(() => _priority = p),
+                  )),
+                  if (p != TaskPriority.values.last) const SizedBox(width: 10),
+                ],
+              ],
+            ),
+            const SizedBox(height: 26),
             AppButton(
               label: 'Add Task',
-              icon: Icons.add,
+              icon: Icons.add_rounded,
               isLoading: _isLoading,
               onPressed: _submit,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PriorityPill extends StatelessWidget {
+  const _PriorityPill({
+    required this.priority,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final TaskPriority priority;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _priorityColors[priority]!;
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          color: selected ? color : color.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: selected ? color : Colors.transparent,
+            width: 2,
+          ),
+        ),
+        child: Column(
+          children: [
+            Icon(Icons.flag_rounded,
+                size: 20, color: selected ? Colors.white : color),
+            const SizedBox(height: 4),
+            Text(
+              priority.label,
+              style: TextStyle(
+                color: selected ? Colors.white : color,
+                fontWeight: FontWeight.w800,
+                fontSize: 13,
+              ),
             ),
           ],
         ),

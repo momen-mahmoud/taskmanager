@@ -54,7 +54,7 @@ void main() {
       ),
     );
 
-    await tester.tap(find.widgetWithText(FilledButton, 'Sign In'));
+    await tester.tap(find.text('Sign In'));
     await tester.pump();
 
     expect(find.text('Email is required'), findsOneWidget);

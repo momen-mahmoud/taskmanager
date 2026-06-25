@@ -81,22 +81,19 @@ final routerProvider = Provider<GoRouter>((ref) {
   );
 });
 
-/// Shared fade + subtle slide-up page transition (bonus: page transitions).
+/// Shared springy fade + scale page transition (bonus: page transitions).
 CustomTransitionPage<void> _fadePage(GoRouterState state, Widget child) {
   return CustomTransitionPage<void>(
     key: state.pageKey,
     child: child,
-    transitionDuration: const Duration(milliseconds: 280),
+    transitionDuration: const Duration(milliseconds: 360),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      final curved =
-          CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+      final fade = CurvedAnimation(parent: animation, curve: Curves.easeOut);
+      final pop = CurvedAnimation(parent: animation, curve: Curves.easeOutBack);
       return FadeTransition(
-        opacity: curved,
-        child: SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(0, 0.03),
-            end: Offset.zero,
-          ).animate(curved),
+        opacity: fade,
+        child: ScaleTransition(
+          scale: Tween<double>(begin: 0.94, end: 1.0).animate(pop),
           child: child,
         ),
       );

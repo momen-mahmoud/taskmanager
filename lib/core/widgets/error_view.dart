@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Friendly error state with an optional retry action. Used as the `error`
-/// branch of `AsyncValue` everywhere for consistent error handling.
+/// Friendly error state with a big icon and an optional springy retry button.
 class ErrorView extends StatelessWidget {
   const ErrorView({
     super.key,
@@ -15,20 +14,25 @@ class ErrorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final color = theme.colorScheme.error;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.cloud_off_rounded,
-                size: 64, color: theme.colorScheme.error),
-            const SizedBox(height: 16),
-            Text(
-              'Something went wrong',
-              style: theme.textTheme.titleMedium,
-              textAlign: TextAlign.center,
+            Container(
+              height: 120,
+              width: 120,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.sentiment_dissatisfied_rounded,
+                  size: 64, color: color),
             ),
+            const SizedBox(height: 20),
+            Text('Oops!', style: theme.textTheme.titleLarge),
             const SizedBox(height: 8),
             Text(
               message,
@@ -37,11 +41,15 @@ class ErrorView extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             if (onRetry != null) ...[
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
               OutlinedButton.icon(
                 onPressed: onRetry,
-                icon: const Icon(Icons.refresh),
+                icon: const Icon(Icons.refresh_rounded),
                 label: const Text('Try again'),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: theme.colorScheme.primary, width: 1.5),
+                  foregroundColor: theme.colorScheme.primary,
+                ),
               ),
             ],
           ],
