@@ -17,18 +17,19 @@ Color _priorityColor(TaskPriority p) => switch (p) {
       TaskPriority.high => const Color(0xFFFF6B6B),
     };
 
-/// A playful task row: a tappable animated circular checkbox, the title
-/// (struck through when done), and colorful status + priority pills.
+/// A playful task row. Tapping cycles the status (Pending → In Progress →
+/// Done → …) via an animated indicator, alongside colorful status + priority
+/// pills.
 class TaskTile extends StatelessWidget {
   const TaskTile({
     super.key,
     required this.task,
-    required this.onToggle,
+    required this.onTap,
     this.isUpdating = false,
   });
 
   final Task task;
-  final VoidCallback onToggle;
+  final VoidCallback onTap;
   final bool isUpdating;
 
   @override
@@ -38,7 +39,7 @@ class TaskTile extends StatelessWidget {
     final priority = _priorityColor(task.priority);
 
     return BouncyTap(
-      onTap: isUpdating ? null : onToggle,
+      onTap: isUpdating ? null : onTap,
       pressedScale: 0.98,
       child: Card(
         child: Padding(
@@ -46,7 +47,7 @@ class TaskTile extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _Check(done: task.isDone, busy: isUpdating, color: status.color),
+              _StatusIndicator(status: task.status, busy: isUpdating),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
@@ -90,12 +91,13 @@ class TaskTile extends StatelessWidget {
   }
 }
 
-class _Check extends StatelessWidget {
-  const _Check({required this.done, required this.busy, required this.color});
+/// Animated circular indicator with a distinct look per status:
+/// empty (pending) · half/bolt (in progress) · filled check (done).
+class _StatusIndicator extends StatelessWidget {
+  const _StatusIndicator({required this.status, required this.busy});
 
-  final bool done;
+  final TaskStatus status;
   final bool busy;
-  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -109,23 +111,30 @@ class _Check extends StatelessWidget {
         ),
       );
     }
-    final activeColor = done ? const Color(0xFF2ED573) : color;
+    final style = _statusStyle(status);
+    final color = style.color;
+    final filled = status == TaskStatus.done;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeOut,
       height: 28,
       width: 28,
       decoration: BoxDecoration(
-        color: done ? activeColor : Colors.transparent,
+        color: filled ? color : Colors.transparent,
         shape: BoxShape.circle,
         border: Border.all(
-          color: done ? activeColor : Colors.grey.withValues(alpha: 0.6),
+          color: status == TaskStatus.pending
+              ? Colors.grey.withValues(alpha: 0.6)
+              : color,
           width: 2,
         ),
       ),
-      child: done
-          ? const Icon(Icons.check_rounded, size: 18, color: Colors.white)
-          : null,
+      child: switch (status) {
+        TaskStatus.pending => null,
+        TaskStatus.inProgress => Icon(Icons.bolt_rounded, size: 17, color: color),
+        TaskStatus.done =>
+          const Icon(Icons.check_rounded, size: 18, color: Colors.white),
+      },
     );
   }
 }

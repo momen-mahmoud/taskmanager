@@ -35,14 +35,14 @@ class ProjectDetailsScreen extends ConsumerWidget {
     return null;
   }
 
-  Future<void> _toggle(
+  Future<void> _cycle(
     BuildContext context,
     WidgetRef ref,
     TaskArgs args,
     Task task,
   ) async {
     try {
-      await ref.read(tasksProvider(args).notifier).toggle(task);
+      await ref.read(tasksProvider(args).notifier).cycle(task);
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -118,7 +118,7 @@ class ProjectDetailsScreen extends ConsumerWidget {
                     final task = tasks[index];
                     return TaskTile(
                       task: task,
-                      onToggle: () => _toggle(context, ref, args, task),
+                      onTap: () => _cycle(context, ref, args, task),
                     );
                   },
                 );

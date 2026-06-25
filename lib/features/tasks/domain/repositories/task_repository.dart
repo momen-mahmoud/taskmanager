@@ -8,8 +8,9 @@ abstract class TaskRepository {
   /// maps a deterministic slice of `/todos` to [projectId].
   Future<Either<Failure, List<Task>>> getTasks({required int projectId});
 
-  /// Toggles a task's done state (optimistic; cache is the source of truth).
-  Future<Either<Failure, Task>> toggleDone(Task task);
+  /// Advances a task to its next status (Pending → In Progress → Done → …),
+  /// optimistically; the cache is the source of truth.
+  Future<Either<Failure, Task>> cycleStatus(Task task);
 
   /// Adds a new task to a project.
   Future<Either<Failure, Task>> addTask({

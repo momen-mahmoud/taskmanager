@@ -9,7 +9,7 @@ A Task Manager mobile app built for the **Electro Pi – Flutter Mobile Develope
 ### Required
 - **Authentication** — Login (email + password) and Registration (name, email, password) with form validation. A JWT is minted on success and stored securely; the app **auto-navigates to Home if a valid session exists**.
 - **Projects / Home** — List of projects from the API, each showing title, description and status, with **pull-to-refresh** and an **empty-state** widget.
-- **Project Details** — All tasks for the selected project. Each task shows title, status (Pending / In Progress / Done) and priority. **Mark tasks done** and **add new tasks** via a bottom sheet.
+- **Project Details** — All tasks for the selected project. Each task shows title, status and priority. Tapping a task **cycles its status** (Pending → In Progress → Done), and **new tasks** are added via a bottom sheet.
 - **Profile / Settings** — Shows the signed-in user's name and email, plus a **Logout** button that clears the token and returns to Login.
 
 ### Technical
@@ -68,7 +68,7 @@ The app uses **[dummyjson.com](https://dummyjson.com)** as the REST backend. Sin
 | App concept | API source | Notes |
 |---|---|---|
 | **Projects** | `GET /posts?limit=30` | Response is wrapped (`{ "posts": [...] }`). `body` → description. No status field, so status is derived deterministically from the id (`id % 3` → Active / On Hold / Completed). |
-| **Tasks** | `GET /todos?limit=10&skip={f(projectId)}` | The API has no project→task link, and `/todos/user/{id}` is mostly empty, so each project is mapped to a **stable, non-empty slice** of `/todos` (skip derived from the project id). dummyjson's text field `todo` → title; `completed` → Done/Pending; priority derived from id (`id % 3` → Low/Medium/High). |
+| **Tasks** | `GET /todos?limit=10&skip={f(projectId)}` | The API has no project→task link, and `/todos/user/{id}` is mostly empty, so each project is mapped to a **stable, non-empty slice** of `/todos` (skip derived from the project id). dummyjson's text field `todo` → title; `completed` → Done/Pending (and tapping a task cycles it through an **In Progress** state locally); priority derived from id (`id % 3` → Low/Medium/High). |
 | **Mark done** | `PATCH /todos/{id}` | dummyjson echoes the change (does not persist). |
 | **Add task** | `POST /todos/add` | dummyjson echoes a created todo (does not persist). |
 

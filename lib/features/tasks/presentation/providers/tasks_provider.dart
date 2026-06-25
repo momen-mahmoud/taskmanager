@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/repositories/task_repository_impl.dart';
 import '../../domain/entities/task.dart';
 import '../../domain/usecases/add_task.dart';
+import '../../domain/usecases/cycle_task_status.dart';
 import '../../domain/usecases/get_tasks.dart';
-import '../../domain/usecases/toggle_task_done.dart';
 
 /// Family argument: a project's id plus the user id used to fetch its tasks.
 typedef TaskArgs = ({int projectId, int userId});
@@ -12,8 +12,8 @@ typedef TaskArgs = ({int projectId, int userId});
 // ---- use-case providers ----
 final getTasksUseCaseProvider =
     Provider((ref) => GetTasks(ref.read(taskRepositoryProvider)));
-final toggleTaskDoneUseCaseProvider =
-    Provider((ref) => ToggleTaskDone(ref.read(taskRepositoryProvider)));
+final cycleTaskStatusUseCaseProvider =
+    Provider((ref) => CycleTaskStatus(ref.read(taskRepositoryProvider)));
 final addTaskUseCaseProvider =
     Provider((ref) => AddTask(ref.read(taskRepositoryProvider)));
 
@@ -28,8 +28,8 @@ class TasksNotifier extends FamilyAsyncNotifier<List<Task>, TaskArgs> {
     return result.fold((failure) => throw failure.message, (tasks) => tasks);
   }
 
-  Future<void> toggle(Task task) async {
-    final result = await ref.read(toggleTaskDoneUseCaseProvider).call(task);
+  Future<void> cycle(Task task) async {
+    final result = await ref.read(cycleTaskStatusUseCaseProvider).call(task);
     result.match(
       (failure) => throw failure.message,
       (updated) {

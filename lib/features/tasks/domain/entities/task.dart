@@ -42,6 +42,13 @@ class Task extends Equatable {
 
   bool get isDone => status == TaskStatus.done;
 
+  /// Next status when the user taps the task: Pending → In Progress → Done → …
+  TaskStatus get nextStatus => switch (status) {
+        TaskStatus.pending => TaskStatus.inProgress,
+        TaskStatus.inProgress => TaskStatus.done,
+        TaskStatus.done => TaskStatus.pending,
+      };
+
   Task copyWith({TaskStatus? status, TaskPriority? priority, String? title}) {
     return Task(
       id: id,

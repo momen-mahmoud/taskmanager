@@ -49,12 +49,8 @@ class TaskRepositoryImpl implements TaskRepository {
   }
 
   @override
-  Future<Either<Failure, Task>> toggleDone(Task task) async {
-    final updated = TaskModel.fromEntity(
-      task.copyWith(
-        status: task.isDone ? TaskStatus.pending : TaskStatus.done,
-      ),
-    );
+  Future<Either<Failure, Task>> cycleStatus(Task task) async {
+    final updated = TaskModel.fromEntity(task.copyWith(status: task.nextStatus));
     try {
       await _local.upsertTask(updated);
     } catch (_) {
