@@ -141,7 +141,7 @@ class _GreetingBanner extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    name != null ? 'Hi, $name 👋' : 'Welcome 👋',
+                    name != null ? 'Hi, $name' : 'Welcome',
                     style: const TextStyle(
                       fontFamily: 'Fredoka',
                       fontSize: 24,
