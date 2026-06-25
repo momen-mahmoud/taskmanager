@@ -20,11 +20,7 @@ A Task Manager mobile app  It demonstrates clean architecture, consistent state 
 - Navigation with **GoRouter**, including an auth-aware redirect guard.
 - Reusable widget components (`AppButton`, `AppTextField`, `LoadingView`, `ErrorView`, `EmptyState`, `StatusChip`).
 
-### Bonus (all implemented)
-- 🌙 **Dark mode** with a toggle in Profile, persisted across restarts.
-- 📦 **Offline caching** with Hive — projects and tasks load from cache when offline.
-- 🎬 **Animations** — Hero transition on project titles + custom fade/slide page transitions.
-- 🧪 **Tests** — unit tests (validators, model mapping, repository logic with mocktail) and widget tests.
+
 
 ---
 
