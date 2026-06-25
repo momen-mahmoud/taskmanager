@@ -134,11 +134,11 @@ Credentials are stored locally on the device (hashed) and persist until you log 
 
 ## 📸 Screenshots
 
-> _Add screenshots / a screen recording here (Login, Home, Project Details, Profile in light & dark)._
-
-| Login | Home | Details | Profile |
-|---|---|---|---|
-| _tbd_ | _tbd_ | _tbd_ | _tbd_ |
+| Login | Register | Home |
+|:---:|:---:|:---:|
+| <img src="screenshots/login.png" width="230"/> | <img src="screenshots/register.png" width="230"/> | <img src="screenshots/home.png" width="230"/> |
+| **Project Details** | **Profile** | **Home — Dark mode** |
+| <img src="screenshots/details.png" width="230"/> | <img src="screenshots/profile.png" width="230"/> | <img src="screenshots/home_dark.png" width="230"/> |
 
 ---
 
