@@ -1,6 +1,6 @@
 # Task Manager — Flutter
 
-A Task Manager mobile app built for the **Electro Pi – Flutter Mobile Developer** technical assessment. It demonstrates clean architecture, consistent state management with **Riverpod**, REST API integration, secure JWT storage, offline caching, and graceful loading/error handling.
+A Task Manager mobile app  It demonstrates clean architecture, consistent state management with **Riverpod**, REST API integration, secure JWT storage, offline caching, and graceful loading/error handling.
 
 ---
 
